@@ -566,24 +566,51 @@ void ImageViewer::clickImage(QString val)
     }
 
     level = sortData["currentLevel"].toArray();
-    leaf1 = level.first().toArray();
-    level.removeFirst();
-    leaf2 = level.first().toArray();
-    level.removeFirst();
+    nextLevel = sortData["nextLevel"].toArray();
 
-    //Debug
-//    qDebug() << leaf1[0];
-//    qDebug() << leaf2[0];
-    strFromObj = QJsonDocument(sortData).toJson(QJsonDocument::Compact).toStdString().c_str();
-    qDebug() << strFromObj;
+    if(level.size() == 1 && nextLevel.size() == 1 && nextLevel[0].toArray().size() == 0)
+    {
+        copySortedFiles();
+        qDebug() << "Hello :-)";
+    }
+    else
+    {
+        level = sortData["currentLevel"].toArray();
+        leaf1 = level.first().toArray();
+        level.removeFirst();
+        leaf2 = level.first().toArray();
+        level.removeFirst();
 
-    loadFile(sourceFolderLineEdit->text() + "\\" + leaf1[0].toString(), false);
-    loadFile(sourceFolderLineEdit->text() + "\\" + leaf2[0].toString(), true);
+        //Debug
+        //    qDebug() << leaf1[0];
+        //    qDebug() << leaf2[0];
+//        strFromObj = QJsonDocument(sortData).toJson(QJsonDocument::Compact).toStdString().c_str();
+//        qDebug() << strFromObj;
+
+        loadFile(sourceFolderLineEdit->text() + "\\" + leaf1[0].toString(), false);
+        loadFile(sourceFolderLineEdit->text() + "\\" + leaf2[0].toString(), true);
+    }
 
 //    loadFile("C:\\Users\\Switch\\Pictures\\" + images[2], false);
 //    loadFile("C:\\Users\\Switch\\Pictures\\" + images[3], true);
 }
 
+void ImageViewer::copySortedFiles()
+{
+    QJsonArray level, list;
+    level = sortData["currentLevel"].toArray();
+    list = level[0].toArray();
+    int count = 1;
+
+    QString strFromObj = QJsonDocument(list).toJson(QJsonDocument::Compact).toStdString().c_str();
+    qDebug() << strFromObj;
+
+    QJsonArray::iterator i;
+    for(i = list.begin(); i != list.end(); ++i)
+    {
+        QFile::copy(sourceFolderLineEdit->text() + "\\" + (*i).toString(), destinationFolderLineEdit->text() + "\\" + QString::number(i - list.begin() + 1) + ".jpg");
+    }
+}
 
 
 

@@ -92,6 +92,7 @@ private slots:
     // For decided which image is better
     void clickImage(QString val);
     void sortSetup();
+    void copySortedFiles();
 
 private:
     void createActions();
