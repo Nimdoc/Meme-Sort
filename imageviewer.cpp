@@ -85,11 +85,31 @@ ImageViewer::ImageViewer(QWidget *parent)
     scrollAreaRight->setBackgroundRole(QPalette::Dark);
     scrollAreaRight->setWidget(imageLabelRight);
 
+    // Do labels
+    sourceFolderLabel = new QLabel("Source Folder: ");
+    destinationFolderLabel = new QLabel("Destination Folder: ");
+
+    sourceFolderLineEdit = new QLineEdit();
+    destinationFolderLineEdit = new QLineEdit();
+
     // Do the layout
     QWidget *centralWidget = new QWidget;
-    QHBoxLayout *layout = new QHBoxLayout(centralWidget);
+
+    QPushButton *startButton = new QPushButton("Start");
+    QVBoxLayout *infoLayout = new QVBoxLayout();
+    infoLayout->addWidget(sourceFolderLabel, 0);
+    infoLayout->addWidget(sourceFolderLineEdit, 0);
+    infoLayout->addWidget(destinationFolderLabel, 0);
+    infoLayout->addWidget(destinationFolderLineEdit, 0);
+    infoLayout->addWidget(startButton);
+
+    QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(scrollAreaLeft);
     layout->addWidget(scrollAreaRight);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+    mainLayout->addLayout(infoLayout);
+    mainLayout->addLayout(layout);
 
     setCentralWidget(centralWidget);
 

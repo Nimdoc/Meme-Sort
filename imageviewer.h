@@ -56,6 +56,7 @@
 #include <QMainWindow>
 #include <QImage>
 #include <QJsonObject>
+#include <QLineEdit>
 #ifndef QT_NO_PRINTER
 #include <QPrinter>
 #endif
@@ -108,6 +109,13 @@ private:
 
     // Data for images and sorting
     QJsonObject sortData;
+
+    //Source and Destination members
+    QLabel *sourceFolderLabel;
+    QLabel *destinationFolderLabel;
+
+    QLineEdit *sourceFolderLineEdit;
+    QLineEdit *destinationFolderLineEdit;
 
 #ifndef QT_NO_PRINTER
     QPrinter printer;
