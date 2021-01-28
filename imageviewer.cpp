@@ -268,7 +268,7 @@ static void initializeImageFileDialog(QFileDialog &dialog, QFileDialog::AcceptMo
 QString ImageViewer::openDirectory()
 {
     return QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                "/home",
+                                                QDir::homePath(),
                                                 QFileDialog::ShowDirsOnly
                                                 | QFileDialog::DontResolveSymlinks);
 }
