@@ -110,6 +110,8 @@ private:
     double scaleFactor;
 
     // Start button
+    QPushButton *sourceFolderButton;
+    QPushButton *destinationFolderButton;
     QPushButton *startButton;
 
     // Data for images and sorting
