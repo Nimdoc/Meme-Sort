@@ -103,13 +103,13 @@ ImageViewer::ImageViewer(QWidget *parent)
     QObject::connect(sourceFolderButton, &QPushButton::clicked, this, [=](){ this->sourceFolderLineEdit->setText(this->openDirectory()); });
     QObject::connect(destinationFolderButton, &QPushButton::clicked, this, [=](){ this->destinationFolderLineEdit->setText(this->openDirectory()); });
 
-    QVBoxLayout *infoLayout = new QVBoxLayout();
-    infoLayout->addWidget(sourceFolderLabel, 0);
-    infoLayout->addWidget(sourceFolderLineEdit, 0);
-    infoLayout->addWidget(sourceFolderButton, 0);
-    infoLayout->addWidget(destinationFolderLabel, 0);
-    infoLayout->addWidget(destinationFolderLineEdit, 0);
-    infoLayout->addWidget(destinationFolderButton, 0);
+    QGridLayout *infoLayout = new QGridLayout();
+    infoLayout->addWidget(sourceFolderLabel, 0, 0);
+    infoLayout->addWidget(sourceFolderLineEdit, 0, 1);
+    infoLayout->addWidget(sourceFolderButton, 0, 2);
+    infoLayout->addWidget(destinationFolderLabel, 1, 0);
+    infoLayout->addWidget(destinationFolderLineEdit, 1, 1);
+    infoLayout->addWidget(destinationFolderButton, 1, 2);
     infoLayout->addWidget(startButton);
 
     QHBoxLayout *layout = new QHBoxLayout();
