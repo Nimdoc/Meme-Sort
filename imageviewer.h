@@ -57,6 +57,7 @@
 #include <QImage>
 #include <QJsonObject>
 #include <QLineEdit>
+#include <QPushButton>
 #ifndef QT_NO_PRINTER
 #include <QPrinter>
 #endif
@@ -90,6 +91,7 @@ private slots:
 
     // For decided which image is better
     void clickImage(QString val);
+    void sortSetup();
 
 private:
     void createActions();
@@ -106,6 +108,9 @@ private:
     QScrollArea *scrollAreaRight;
     QScrollArea *scrollAreaLeft;
     double scaleFactor;
+
+    // Start button
+    QPushButton *startButton;
 
     // Data for images and sorting
     QJsonObject sortData;

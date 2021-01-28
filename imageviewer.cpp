@@ -95,7 +95,10 @@ ImageViewer::ImageViewer(QWidget *parent)
     // Do the layout
     QWidget *centralWidget = new QWidget;
 
-    QPushButton *startButton = new QPushButton("Start");
+    startButton = new QPushButton("Start");
+
+    QObject::connect(startButton, &QPushButton::clicked, this, &ImageViewer::sortSetup);
+
     QVBoxLayout *infoLayout = new QVBoxLayout();
     infoLayout->addWidget(sourceFolderLabel, 0);
     infoLayout->addWidget(sourceFolderLineEdit, 0);
@@ -117,6 +120,12 @@ ImageViewer::ImageViewer(QWidget *parent)
 
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 
+    scrollAreaRight->setWidgetResizable(true);
+    scrollAreaLeft->setWidgetResizable(true);
+}
+
+void ImageViewer::sortSetup()
+{
     // Connect the slot and signal
     QObject::connect(imageLabelLeft, &clickimagelabel::mousePressed,
                      this, &ImageViewer::clickImage);
@@ -153,11 +162,7 @@ ImageViewer::ImageViewer(QWidget *parent)
 
     loadFile("C:\\Users\\Switch\\Pictures\\Numbers\\" + images[0], false);
     loadFile("C:\\Users\\Switch\\Pictures\\Numbers\\" + images[1], true);
-
-    scrollAreaRight->setWidgetResizable(true);
-    scrollAreaLeft->setWidgetResizable(true);
 }
-
 
 bool ImageViewer::loadFile(const QString &fileName, const bool right)
 {
