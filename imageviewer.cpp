@@ -134,7 +134,7 @@ void ImageViewer::sortSetup()
 
     // More test code
 
-    QDir directory("C:\\Users\\Switch\\Pictures\\Numbers");
+    QDir directory(sourceFolderLineEdit->text());
     QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG",QDir::Files);
 
     // Setup the jsonData
@@ -160,8 +160,8 @@ void ImageViewer::sortSetup()
     QString strFromObj = QJsonDocument(sortData).toJson(QJsonDocument::Compact).toStdString().c_str();
     qDebug() << strFromObj;
 
-    loadFile("C:\\Users\\Switch\\Pictures\\Numbers\\" + images[0], false);
-    loadFile("C:\\Users\\Switch\\Pictures\\Numbers\\" + images[1], true);
+    loadFile(sourceFolderLineEdit->text() + "\\" + images[0], false);
+    loadFile(sourceFolderLineEdit->text() + "\\" + images[1], true);
 }
 
 bool ImageViewer::loadFile(const QString &fileName, const bool right)
@@ -571,8 +571,8 @@ void ImageViewer::clickImage(QString val)
     strFromObj = QJsonDocument(sortData).toJson(QJsonDocument::Compact).toStdString().c_str();
     qDebug() << strFromObj;
 
-    loadFile("C:\\Users\\Switch\\Pictures\\Numbers\\" + leaf1[0].toString(), false);
-    loadFile("C:\\Users\\Switch\\Pictures\\Numbers\\" + leaf2[0].toString(), true);
+    loadFile(sourceFolderLineEdit->text() + "\\" + leaf1[0].toString(), false);
+    loadFile(sourceFolderLineEdit->text() + "\\" + leaf2[0].toString(), true);
 
 //    loadFile("C:\\Users\\Switch\\Pictures\\" + images[2], false);
 //    loadFile("C:\\Users\\Switch\\Pictures\\" + images[3], true);
