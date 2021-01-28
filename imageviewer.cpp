@@ -122,8 +122,6 @@ ImageViewer::ImageViewer(QWidget *parent)
 
     setCentralWidget(centralWidget);
 
-    createActions();
-
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 
     scrollAreaRight->setWidgetResizable(true);
@@ -202,12 +200,6 @@ void ImageViewer::setImage(const QImage &newImage, const bool right)
 
 
         scrollAreaRight->setVisible(true);
-        printAct->setEnabled(true);
-        fitToWindowAct->setEnabled(true);
-        updateActions();
-
-        if (!fitToWindowAct->isChecked())
-            imageLabelRight->adjustSize();
     }
     else
     {
@@ -216,12 +208,6 @@ void ImageViewer::setImage(const QImage &newImage, const bool right)
         scaleFactor = 1.0;
 
         scrollAreaLeft->setVisible(true);
-        printAct->setEnabled(true);
-        fitToWindowAct->setEnabled(true);
-        updateActions();
-
-        if (!fitToWindowAct->isChecked())
-            imageLabelLeft->adjustSize();
     }
 }
 
