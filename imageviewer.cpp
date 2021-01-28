@@ -99,7 +99,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     sourceFolderButton = new QPushButton("Open Folder");
     destinationFolderButton = new QPushButton("Open Folder");
 
-    QObject::connect(startButton, &QPushButton::clicked, this, &ImageViewer::sortSetup);
+    QObject::connect(startButton, &QPushButton::clicked, this, [=](){ this->isSorting ? this->stopSort() : this->startSort(); });
     QObject::connect(sourceFolderButton, &QPushButton::clicked, this, [=](){ this->sourceFolderLineEdit->setText(this->openDirectory()); });
     QObject::connect(destinationFolderButton, &QPushButton::clicked, this, [=](){ this->destinationFolderLineEdit->setText(this->openDirectory()); });
 
@@ -126,6 +126,27 @@ ImageViewer::ImageViewer(QWidget *parent)
 
     scrollAreaRight->setWidgetResizable(true);
     scrollAreaLeft->setWidgetResizable(true);
+}
+
+void ImageViewer::startSort()
+{
+    isSorting = true;
+    sourceFolderLineEdit->setEnabled(false);
+    destinationFolderLineEdit->setEnabled(false);
+    sourceFolderButton->setEnabled(false);
+    destinationFolderButton->setEnabled(false);
+    startButton->setText("Stop");
+    sortSetup();
+}
+
+void ImageViewer::stopSort()
+{
+    isSorting = false;
+    sourceFolderLineEdit->setEnabled(true);
+    destinationFolderLineEdit->setEnabled(true);
+    sourceFolderButton->setEnabled(true);
+    destinationFolderButton->setEnabled(true);
+    startButton->setText("Start");
 }
 
 void ImageViewer::sortSetup()

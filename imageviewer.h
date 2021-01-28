@@ -91,6 +91,8 @@ private slots:
 
     // For decided which image is better
     void clickImage(QString val);
+    void startSort();
+    void stopSort();
     void sortSetup();
     void copySortedFiles();
 
@@ -124,6 +126,8 @@ private:
 
     QLineEdit *sourceFolderLineEdit;
     QLineEdit *destinationFolderLineEdit;
+
+    bool isSorting;
 
 #ifndef QT_NO_PRINTER
     QPrinter printer;
