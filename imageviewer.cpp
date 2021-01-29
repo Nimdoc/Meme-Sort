@@ -191,13 +191,25 @@ void ImageViewer::sortSetup()
     QObject::connect(imageLabelRight, &clickimagelabel::mousePressed,
                      this, &ImageViewer::clickImage);
 
-    // More test code
-
     QDir directory(sourceFolderLineEdit->text());
     QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG" << "*.png" << "*.PNG",QDir::Files);
 
-    // Setup the jsonData
+    if(images.size() == 0)
+    {
+        stopSort();
+        QMessageBox::information(this, QGuiApplication::applicationDisplayName(), tr("There is nothing to sort in %1").arg(sourceFolderLineEdit->text()));
+        return;
+    }
+    else if(images.size() == 1)
+    {
+        QFileInfo file(sourceFolderLineEdit->text() + "\\" + (images[0]));
+        QFile::copy(sourceFolderLineEdit->text() + "\\" + (images[0]), destinationFolderLineEdit->text() + "\\1." + file.completeSuffix());
+        stopSort();
+        QMessageBox::information(this, QGuiApplication::applicationDisplayName(), tr("There was one file found in the source directory. By definition a list of size one is in order. The one file has been copied to the destination folder %1").arg(sourceFolderLineEdit->text()));
+        return;
+    }
 
+    // Setup the jsonData
     QJsonArray level;
     QJsonArray nextLevel;
 
