@@ -196,7 +196,7 @@ void ImageViewer::sortSetup()
     // More test code
 
     QDir directory(sourceFolderLineEdit->text());
-    QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG",QDir::Files);
+    QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG" << "*.png" << "*.PNG",QDir::Files);
 
     // Setup the jsonData
 
@@ -629,7 +629,8 @@ void ImageViewer::copySortedFiles()
     QJsonArray::iterator i;
     for(i = list.begin(); i != list.end(); ++i)
     {
-        QFile::copy(sourceFolderLineEdit->text() + "\\" + (*i).toString(), destinationFolderLineEdit->text() + "\\" + QString::number(i - list.begin() + 1) + ".jpg");
+        QFileInfo file(sourceFolderLineEdit->text() + "\\" + (*i).toString());
+        QFile::copy(sourceFolderLineEdit->text() + "\\" + (*i).toString(), destinationFolderLineEdit->text() + "\\" + QString::number(i - list.begin() + 1) + "." + file.completeSuffix());
     }
 }
 
