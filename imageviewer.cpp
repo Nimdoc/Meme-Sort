@@ -68,7 +68,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     imageLabelLeft->setName("Left");
     imageLabelLeft->setBackgroundRole(QPalette::Base);
     imageLabelLeft->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    imageLabelLeft->setScaledContents(true);
+    imageLabelLeft->setAlignment(Qt::AlignCenter);
 
     scrollAreaLeft = new QScrollArea;
     scrollAreaLeft->setBackgroundRole(QPalette::Dark);
@@ -79,7 +79,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     imageLabelRight->setName("Right");
     imageLabelRight->setBackgroundRole(QPalette::Base);
     imageLabelRight->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    imageLabelRight->setScaledContents(true);
+    imageLabelRight->setAlignment(Qt::AlignCenter);
 
     scrollAreaRight = new QScrollArea;
     scrollAreaRight->setBackgroundRole(QPalette::Dark);
@@ -216,22 +216,18 @@ void ImageViewer::setImage(const QImage &newImage, const bool right)
     if(right)
     {
         image = newImage;
-        imageLabelRight->setPixmap(QPixmap::fromImage(image));
+        imageLabelRight->setPixmap(QPixmap::fromImage(image).scaled(imageLabelRight->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         scaleFactor = 1.0;
-
-
         scrollAreaRight->setVisible(true);
     }
     else
     {
         image = newImage;
-        imageLabelLeft->setPixmap(QPixmap::fromImage(image));
+        imageLabelLeft->setPixmap(QPixmap::fromImage(image).scaled(imageLabelLeft->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         scaleFactor = 1.0;
-
         scrollAreaLeft->setVisible(true);
     }
 }
-
 
 bool ImageViewer::saveFile(const QString &fileName)
 {
