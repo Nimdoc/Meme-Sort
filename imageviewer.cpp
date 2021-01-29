@@ -132,6 +132,8 @@ void ImageViewer::startSort()
 {
     bool srcGood = false, destGood = false;
 
+    qDebug() << "test";
+
     if(sourceFolderLineEdit->text().length() == 0 || !QDir(sourceFolderLineEdit->text()).exists())
     {
         sourceFolderLineEdit->setStyleSheet("border: 1px solid red");
@@ -160,6 +162,9 @@ void ImageViewer::startSort()
         sourceFolderButton->setEnabled(false);
         destinationFolderButton->setEnabled(false);
         startButton->setText("Stop");
+        comparisons = 0;
+        const QString message = tr("Comparisons: %1").arg(comparisons);
+        statusBar()->showMessage(message);
         sortSetup();
     }
 }
@@ -212,10 +217,6 @@ void ImageViewer::sortSetup()
     sortData["currentLevel"] = level;
     sortData["nextLevel"] = nextLevel;
 
-    //Debug
-    QString strFromObj = QJsonDocument(sortData).toJson(QJsonDocument::Compact).toStdString().c_str();
-    qDebug() << strFromObj;
-
     loadFile(sourceFolderLineEdit->text() + "\\" + images[0], false);
     loadFile(sourceFolderLineEdit->text() + "\\" + images[1], true);
 }
@@ -234,11 +235,6 @@ bool ImageViewer::loadFile(const QString &fileName, const bool right)
 
     setImage(newImage, right);
 
-    setWindowFilePath(fileName);
-
-    const QString message = tr("Opened \"%1\", %2x%3, Depth: %4")
-        .arg(QDir::toNativeSeparators(fileName)).arg(image.width()).arg(image.height()).arg(image.depth());
-    statusBar()->showMessage(message);
     return true;
 }
 
@@ -514,15 +510,10 @@ void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 void ImageViewer::clickImage(QString val)
 {
     QString strFromObj;
-//    strFromObj = QJsonDocument(sortData).toJson(QJsonDocument::Compact).toStdString().c_str();
-//    qDebug() << strFromObj;
-
     QJsonArray level, nextLevel, leaf, otherLeaf, nextLeaf, tmpLeaf, leaf1, leaf2;
     QString value;
     QJsonArray::iterator i;
     int curLeafPos, otherLeafPos;
-
-//    level = sortData["currentLevel"].toArray();
 
     level = sortData["currentLevel"].toArray();
     nextLevel = sortData["nextLevel"].toArray();
@@ -602,11 +593,15 @@ void ImageViewer::clickImage(QString val)
     level = sortData["currentLevel"].toArray();
     nextLevel = sortData["nextLevel"].toArray();
 
+    comparisons++;
+    const QString message = tr("Comparisons: %1").arg(comparisons);
+    statusBar()->showMessage(message);
+
     if(level.size() == 1 && nextLevel.size() == 1 && nextLevel[0].toArray().size() == 0)
     {
         copySortedFiles();
         stopSort();
-        qDebug() << "Hello :-)";
+        QMessageBox::information(this, QGuiApplication::applicationDisplayName(), tr("All files have been sorted."));
     }
     else
     {
@@ -616,18 +611,9 @@ void ImageViewer::clickImage(QString val)
         leaf2 = level.first().toArray();
         level.removeFirst();
 
-        //Debug
-        //    qDebug() << leaf1[0];
-        //    qDebug() << leaf2[0];
-//        strFromObj = QJsonDocument(sortData).toJson(QJsonDocument::Compact).toStdString().c_str();
-//        qDebug() << strFromObj;
-
         loadFile(sourceFolderLineEdit->text() + "\\" + leaf1[0].toString(), false);
         loadFile(sourceFolderLineEdit->text() + "\\" + leaf2[0].toString(), true);
     }
-
-//    loadFile("C:\\Users\\Switch\\Pictures\\" + images[2], false);
-//    loadFile("C:\\Users\\Switch\\Pictures\\" + images[3], true);
 }
 
 void ImageViewer::copySortedFiles()

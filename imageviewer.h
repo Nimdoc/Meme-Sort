@@ -127,7 +127,8 @@ private:
     QLineEdit *sourceFolderLineEdit;
     QLineEdit *destinationFolderLineEdit;
 
-    bool isSorting;
+    int comparisons = 0;
+    bool isSorting = false;
 
 #ifndef QT_NO_PRINTER
     QPrinter printer;
