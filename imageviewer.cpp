@@ -130,18 +130,49 @@ ImageViewer::ImageViewer(QWidget *parent)
 
 void ImageViewer::startSort()
 {
-    isSorting = true;
-    sourceFolderLineEdit->setEnabled(false);
-    destinationFolderLineEdit->setEnabled(false);
-    sourceFolderButton->setEnabled(false);
-    destinationFolderButton->setEnabled(false);
-    startButton->setText("Stop");
-    sortSetup();
+    bool srcGood = false, destGood = false;
+
+    if(sourceFolderLineEdit->text().length() == 0 || !QDir(sourceFolderLineEdit->text()).exists())
+    {
+        sourceFolderLineEdit->setStyleSheet("border: 1px solid red");
+    }
+    else
+    {
+        sourceFolderLineEdit->setStyleSheet("");
+        srcGood = true;
+    }
+
+    if(destinationFolderLineEdit->text().length() == 0 || !QDir(destinationFolderLineEdit->text()).exists())
+    {
+        destinationFolderLineEdit->setStyleSheet("border: 1px solid red");
+    }
+    else
+    {
+        destinationFolderLineEdit->setStyleSheet("");
+        destGood = true;
+    }
+
+    if(srcGood && destGood)
+    {
+        isSorting = true;
+        sourceFolderLineEdit->setEnabled(false);
+        destinationFolderLineEdit->setEnabled(false);
+        sourceFolderButton->setEnabled(false);
+        destinationFolderButton->setEnabled(false);
+        startButton->setText("Stop");
+        sortSetup();
+    }
 }
 
 void ImageViewer::stopSort()
 {
     isSorting = false;
+
+    QObject::disconnect(imageLabelLeft, &clickimagelabel::mousePressed,
+                     this, &ImageViewer::clickImage);
+    QObject::disconnect(imageLabelRight, &clickimagelabel::mousePressed,
+                     this, &ImageViewer::clickImage);
+
     sourceFolderLineEdit->setEnabled(true);
     destinationFolderLineEdit->setEnabled(true);
     sourceFolderButton->setEnabled(true);
@@ -574,6 +605,7 @@ void ImageViewer::clickImage(QString val)
     if(level.size() == 1 && nextLevel.size() == 1 && nextLevel[0].toArray().size() == 0)
     {
         copySortedFiles();
+        stopSort();
         qDebug() << "Hello :-)";
     }
     else
