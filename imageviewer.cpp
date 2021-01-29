@@ -132,8 +132,6 @@ void ImageViewer::startSort()
 {
     bool srcGood = false, destGood = false;
 
-    qDebug() << "test";
-
     if(sourceFolderLineEdit->text().length() == 0 || !QDir(sourceFolderLineEdit->text()).exists())
     {
         sourceFolderLineEdit->setStyleSheet("border: 1px solid red");
@@ -622,9 +620,6 @@ void ImageViewer::copySortedFiles()
     level = sortData["currentLevel"].toArray();
     list = level[0].toArray();
     int count = 1;
-
-    QString strFromObj = QJsonDocument(list).toJson(QJsonDocument::Compact).toStdString().c_str();
-    qDebug() << strFromObj;
 
     QJsonArray::iterator i;
     for(i = list.begin(); i != list.end(); ++i)
