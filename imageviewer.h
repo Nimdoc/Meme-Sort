@@ -78,15 +78,6 @@ public:
 
 private slots:
     QString openDirectory();
-    void open();
-    void saveAs();
-    void print();
-    void copy();
-    void paste();
-    void zoomIn();
-    void zoomOut();
-    void normalSize();
-    void fitToWindow();
     void about();
 
     // For decided which image is better
@@ -97,13 +88,7 @@ private slots:
     void copySortedFiles();
 
 private:
-    void createActions();
-    void createMenus();
-    void updateActions();
-    bool saveFile(const QString &fileName);
     void setImage(const QImage &newImage, const bool right);
-    void scaleImage(double factor);
-    void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
     QImage image;
     clickimagelabel *imageLabelRight;
