@@ -104,6 +104,8 @@ ImageViewer::ImageViewer(QWidget *parent)
     redoAction = undoStack->createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
 
+    aboutButton = new QPushButton("About");
+    aboutButton->setFixedWidth(60);
     startButton = new QPushButton("Start");
     undoButton = new QPushButton(tr("⟲"));
     undoButton->setFixedWidth(40);
@@ -112,6 +114,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     sourceFolderButton = new QPushButton("Open Folder");
     destinationFolderButton = new QPushButton("Open Folder");
 
+    QObject::connect(aboutButton, &QPushButton::clicked, this, [=](){ this->about(); });
     QObject::connect(startButton, &QPushButton::clicked, this, [=](){ this->isSorting ? this->stopSort() : this->startSort(); });
     QObject::connect(undoButton, &QPushButton::clicked, this, [=](){ undoStack->undo(); });
     QObject::connect(redoButton, &QPushButton::clicked, this, [=](){ undoStack->redo(); });
@@ -130,6 +133,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     infoLayout->addWidget(destinationFolderLineEdit, 1, 1);
     infoLayout->addWidget(destinationFolderButton, 1, 2);
     infoLayout->addLayout(controlsLayout, 2, 0);
+    infoLayout->addWidget(aboutButton, 2, 1);
     infoLayout->addWidget(startButton, 2, 2);
 
     QHBoxLayout *layout = new QHBoxLayout();
@@ -300,19 +304,15 @@ QString ImageViewer::openDirectory()
 
 void ImageViewer::about()
 {
-    QMessageBox::about(this, tr("About Image Viewer"),
-            tr("<p>The <b>Image Viewer</b> example shows how to combine QLabel "
-               "and QScrollArea to display an image. QLabel is typically used "
-               "for displaying a text, but it can also display an image. "
-               "QScrollArea provides a scrolling view around another widget. "
-               "If the child widget exceeds the size of the frame, QScrollArea "
-               "automatically provides scroll bars. </p><p>The example "
-               "demonstrates how QLabel's ability to scale its contents "
-               "(QLabel::scaledContents), and QScrollArea's ability to "
-               "automatically resize its contents "
-               "(QScrollArea::widgetResizable), can be used to implement "
-               "zooming and scaling features. </p><p>In addition the example "
-               "shows how to use QPainter to print an image.</p>"));
+    QMessageBox::about(this, tr("About"),
+                       tr("<p><b>Meme Sort</b> is a sorting program that lets you sort your "
+                        "pictures. All you do is select a source and destination folder, "
+                        "click start, then click on which image you think is better."
+                        " When all the comparisons are made, the pictures from the "
+                        "source folder will be copied to the destination folder and "
+                        "will be ordered by your judgement.</p>"
+                        "<p>Version: 1.0</p>"
+                        "Tom Busby 2021 <a href=\"https://busbania.com\">busbania.com<a>"));
 }
 
 /**
@@ -460,6 +460,8 @@ void ImageViewer::setSortState(QJsonObject data, int newComparisons)
     sortData = data;
     comparisons = newComparisons;
     loadImagesFromCurrentLevel();
+    const QString message = tr("Comparisons: %1 | Estimated %2 to %3 comparisons needed.").arg(comparisons).arg(lowerBound).arg(upperBound);
+    statusBar()->showMessage(message);
 }
 
 

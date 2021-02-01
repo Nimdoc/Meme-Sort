@@ -103,6 +103,7 @@ private:
     double scaleFactor;
 
     // Start button
+    QPushButton *aboutButton;
     QPushButton *sourceFolderButton;
     QPushButton *destinationFolderButton;
     QPushButton *startButton;
