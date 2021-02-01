@@ -2,6 +2,8 @@
   requires(qtConfig(filedialog))
   qtHaveModule(printsupport): QT += printsupport
 
+  win32:RC_ICONS += icon.ico
+
   HEADERS       = imageviewer.h \
   analysishelper.h \
   clickimagelabel.h \
