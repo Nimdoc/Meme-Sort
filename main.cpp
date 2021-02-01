@@ -59,14 +59,6 @@
 
 int main(int argc, char *argv[])
 {
-    // This is just test code
-
-//    QDir directory("C:\\Users\\Switch\\Pictures");
-//    QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG",QDir::Files);
-//    foreach(QString filename, images) {
-//        qDebug() << filename;
-//    }
-
     QApplication app(argc, argv);
     QGuiApplication::setApplicationDisplayName(ImageViewer::tr("Meme Sort"));
     ImageViewer imageViewer;

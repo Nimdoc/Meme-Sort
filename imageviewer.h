@@ -59,6 +59,7 @@
 #include <QJsonObject>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QUndoStack>
 #ifndef QT_NO_PRINTER
 #include <QPrinter>
 #endif
@@ -77,6 +78,8 @@ public:
     ImageViewer(QWidget *parent = nullptr);
     bool loadFile(const QString &, const bool right);
 
+    void setSortState(QJsonObject data, int newComparisons);
+
 private slots:
     QString openDirectory();
     void about();
@@ -87,6 +90,7 @@ private slots:
     void stopSort();
     void sortSetup();
     void copySortedFiles();
+    void loadImagesFromCurrentLevel();
 
 private:
     void setImage(const QImage &newImage, const bool right);
@@ -102,6 +106,10 @@ private:
     QPushButton *sourceFolderButton;
     QPushButton *destinationFolderButton;
     QPushButton *startButton;
+    QPushButton *undoButton;
+    QPushButton *redoButton;
+
+    QUndoStack *undoStack = nullptr;
 
     // Data for images and sorting
     QJsonObject sortData;
@@ -119,17 +127,8 @@ private:
     int upperBound;
     bool isSorting = false;
 
-#ifndef QT_NO_PRINTER
-    QPrinter printer;
-#endif
-
-    QAction *saveAsAct;
-    QAction *printAct;
-    QAction *copyAct;
-    QAction *zoomInAct;
-    QAction *zoomOutAct;
-    QAction *normalSizeAct;
-    QAction *fitToWindowAct;
+    QAction *undoAction = nullptr;
+    QAction *redoAction = nullptr;
 };
 
 #endif

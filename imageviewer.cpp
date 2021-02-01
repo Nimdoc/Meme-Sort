@@ -49,6 +49,7 @@
 ****************************************************************************/
 
 #include "imageviewer.h"
+#include "sortcommand.h"
 
 #include <QtWidgets>
 #if defined(QT_PRINTSUPPORT_LIB)
@@ -95,11 +96,23 @@ ImageViewer::ImageViewer(QWidget *parent)
     // Do the layout
     QWidget *centralWidget = new QWidget;
 
+    undoStack = new QUndoStack(this);
+
+    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
+
+    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
+
     startButton = new QPushButton("Start");
+    undoButton = new QPushButton(tr("&Undo"));
+    redoButton = new QPushButton(tr("&Redo"));
     sourceFolderButton = new QPushButton("Open Folder");
     destinationFolderButton = new QPushButton("Open Folder");
 
     QObject::connect(startButton, &QPushButton::clicked, this, [=](){ this->isSorting ? this->stopSort() : this->startSort(); });
+    QObject::connect(undoButton, &QPushButton::clicked, this, [=](){ undoStack->undo(); });
+    QObject::connect(redoButton, &QPushButton::clicked, this, [=](){ undoStack->redo(); });
     QObject::connect(sourceFolderButton, &QPushButton::clicked, this, [=](){ this->sourceFolderLineEdit->setText(this->openDirectory()); });
     QObject::connect(destinationFolderButton, &QPushButton::clicked, this, [=](){ this->destinationFolderLineEdit->setText(this->openDirectory()); });
 
@@ -110,6 +123,8 @@ ImageViewer::ImageViewer(QWidget *parent)
     infoLayout->addWidget(destinationFolderLabel, 1, 0);
     infoLayout->addWidget(destinationFolderLineEdit, 1, 1);
     infoLayout->addWidget(destinationFolderButton, 1, 2);
+    infoLayout->addWidget(undoButton);
+    infoLayout->addWidget(redoButton);
     infoLayout->addWidget(startButton);
 
     QHBoxLayout *layout = new QHBoxLayout();
@@ -311,6 +326,8 @@ void ImageViewer::clickImage(QString val)
     QJsonArray::iterator i;
     int curLeafPos, otherLeafPos;
 
+    undoStack->push(new SortCommand(this, sortData, comparisons));
+
     level = sortData["currentLevel"].toArray();
     nextLevel = sortData["nextLevel"].toArray();
     nextLeaf = nextLevel.last().toArray();
@@ -401,14 +418,7 @@ void ImageViewer::clickImage(QString val)
     }
     else
     {
-        level = sortData["currentLevel"].toArray();
-        leaf1 = level.first().toArray();
-        level.removeFirst();
-        leaf2 = level.first().toArray();
-        level.removeFirst();
-
-        loadFile(sourceFolderLineEdit->text() + "\\" + leaf1[0].toString(), false);
-        loadFile(sourceFolderLineEdit->text() + "\\" + leaf2[0].toString(), true);
+        loadImagesFromCurrentLevel();
     }
 }
 
@@ -426,7 +436,25 @@ void ImageViewer::copySortedFiles()
     }
 }
 
+void ImageViewer::loadImagesFromCurrentLevel()
+{
+        QJsonArray level, leaf1, leaf2;
+        level = sortData["currentLevel"].toArray();
+        leaf1 = level.first().toArray();
+        level.removeFirst();
+        leaf2 = level.first().toArray();
+        level.removeFirst();
 
+        loadFile(sourceFolderLineEdit->text() + "\\" + leaf1[0].toString(), false);
+        loadFile(sourceFolderLineEdit->text() + "\\" + leaf2[0].toString(), true);
+}
+
+void ImageViewer::setSortState(QJsonObject data, int newComparisons)
+{
+    sortData = data;
+    comparisons = newComparisons;
+    loadImagesFromCurrentLevel();
+}
 
 
 

@@ -4,11 +4,13 @@
 
   HEADERS       = imageviewer.h \
   analysishelper.h \
-  clickimagelabel.h
+  clickimagelabel.h \
+  sortcommand.h
   SOURCES       = imageviewer.cpp \
     analysishelper.cpp \
     clickimagelabel.cpp \
-                  main.cpp
+                  main.cpp \
+    sortcommand.cpp
 
   # install
   target.path = $$[QT_INSTALL_EXAMPLES]/widgets/widgets/imageviewer
