@@ -105,8 +105,10 @@ ImageViewer::ImageViewer(QWidget *parent)
     redoAction->setShortcuts(QKeySequence::Redo);
 
     startButton = new QPushButton("Start");
-    undoButton = new QPushButton(tr("&Undo"));
-    redoButton = new QPushButton(tr("&Redo"));
+    undoButton = new QPushButton(tr("⟲"));
+    undoButton->setFixedWidth(40);
+    redoButton = new QPushButton(tr("⟳"));
+    redoButton->setFixedWidth(40);
     sourceFolderButton = new QPushButton("Open Folder");
     destinationFolderButton = new QPushButton("Open Folder");
 
@@ -116,6 +118,10 @@ ImageViewer::ImageViewer(QWidget *parent)
     QObject::connect(sourceFolderButton, &QPushButton::clicked, this, [=](){ this->sourceFolderLineEdit->setText(this->openDirectory()); });
     QObject::connect(destinationFolderButton, &QPushButton::clicked, this, [=](){ this->destinationFolderLineEdit->setText(this->openDirectory()); });
 
+    QHBoxLayout *controlsLayout = new QHBoxLayout();
+    controlsLayout->addWidget(undoButton);
+    controlsLayout->addWidget(redoButton);
+
     QGridLayout *infoLayout = new QGridLayout();
     infoLayout->addWidget(sourceFolderLabel, 0, 0);
     infoLayout->addWidget(sourceFolderLineEdit, 0, 1);
@@ -123,9 +129,8 @@ ImageViewer::ImageViewer(QWidget *parent)
     infoLayout->addWidget(destinationFolderLabel, 1, 0);
     infoLayout->addWidget(destinationFolderLineEdit, 1, 1);
     infoLayout->addWidget(destinationFolderButton, 1, 2);
-    infoLayout->addWidget(undoButton);
-    infoLayout->addWidget(redoButton);
-    infoLayout->addWidget(startButton);
+    infoLayout->addLayout(controlsLayout, 2, 0);
+    infoLayout->addWidget(startButton, 2, 2);
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(scrollAreaLeft);
@@ -326,6 +331,7 @@ void ImageViewer::clickImage(QString val)
     QJsonArray::iterator i;
     int curLeafPos, otherLeafPos;
 
+    // Push the current state on to the undo stack so the following comparison can be undone.
     undoStack->push(new SortCommand(this, sortData, comparisons));
 
     level = sortData["currentLevel"].toArray();
