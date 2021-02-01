@@ -161,9 +161,9 @@ void ImageViewer::startSort()
         destinationFolderButton->setEnabled(false);
         startButton->setText("Stop");
         comparisons = 0;
-        const QString message = tr("Comparisons: %1").arg(comparisons);
-        statusBar()->showMessage(message);
         sortSetup();
+        const QString message = tr("Comparisons: %1 | Estimated %2 to %3 comparisons needed.").arg(comparisons).arg(lowerBound).arg(upperBound);
+        statusBar()->showMessage(message);
     }
 }
 
@@ -208,6 +208,10 @@ void ImageViewer::sortSetup()
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(), tr("There was one file found in the source directory. By definition a list of size one is in order. The one file has been copied to the destination folder %1").arg(sourceFolderLineEdit->text()));
         return;
     }
+
+    initialSize = images.size();
+    lowerBound = AnalysisHelper::getLowerBound(initialSize);
+    upperBound = AnalysisHelper::getUpperBound(initialSize);
 
     // Setup the jsonData
     QJsonArray level;
@@ -386,7 +390,7 @@ void ImageViewer::clickImage(QString val)
     nextLevel = sortData["nextLevel"].toArray();
 
     comparisons++;
-    const QString message = tr("Comparisons: %1").arg(comparisons);
+    const QString message = tr("Comparisons: %1 | Estimated %2 to %3 comparisons needed.").arg(comparisons).arg(lowerBound).arg(upperBound);
     statusBar()->showMessage(message);
 
     if(level.size() == 1 && nextLevel.size() == 1 && nextLevel[0].toArray().size() == 0)

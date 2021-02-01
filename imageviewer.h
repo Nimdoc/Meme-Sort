@@ -52,6 +52,7 @@
 #define IMAGEVIEWER_H
 
 #include "clickimagelabel.h"
+#include "analysishelper.h"
 
 #include <QMainWindow>
 #include <QImage>
@@ -113,6 +114,9 @@ private:
     QLineEdit *destinationFolderLineEdit;
 
     int comparisons = 0;
+    int initialSize = 0;
+    int lowerBound;
+    int upperBound;
     bool isSorting = false;
 
 #ifndef QT_NO_PRINTER

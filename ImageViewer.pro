@@ -3,8 +3,10 @@
   qtHaveModule(printsupport): QT += printsupport
 
   HEADERS       = imageviewer.h \
+  analysishelper.h \
   clickimagelabel.h
   SOURCES       = imageviewer.cpp \
+    analysishelper.cpp \
     clickimagelabel.cpp \
                   main.cpp
 
