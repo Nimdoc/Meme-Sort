@@ -48,7 +48,7 @@
 **
 ****************************************************************************/
 
-#include "imageviewer.h"
+#include "memesort.h"
 #include "sortcommand.h"
 
 #include <QtWidgets>
@@ -60,7 +60,7 @@
 #endif
 #endif
 
-ImageViewer::ImageViewer(QWidget *parent)
+MemeSort::MemeSort(QWidget *parent)
    : QMainWindow(parent), imageLabelRight(new clickimagelabel), imageLabelLeft(new clickimagelabel),
      scrollAreaRight(new QScrollArea), scrollAreaLeft(new QScrollArea), scaleFactor(1)
 {
@@ -152,7 +152,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     scrollAreaLeft->setWidgetResizable(true);
 }
 
-void ImageViewer::startSort()
+void MemeSort::startSort()
 {
     bool srcGood = false, destGood = false;
 
@@ -191,14 +191,14 @@ void ImageViewer::startSort()
     }
 }
 
-void ImageViewer::stopSort()
+void MemeSort::stopSort()
 {
     isSorting = false;
 
     QObject::disconnect(imageLabelLeft, &clickimagelabel::mousePressed,
-                     this, &ImageViewer::clickImage);
+                     this, &MemeSort::clickImage);
     QObject::disconnect(imageLabelRight, &clickimagelabel::mousePressed,
-                     this, &ImageViewer::clickImage);
+                     this, &MemeSort::clickImage);
 
     sourceFolderLineEdit->setEnabled(true);
     destinationFolderLineEdit->setEnabled(true);
@@ -207,13 +207,13 @@ void ImageViewer::stopSort()
     startButton->setText("Start");
 }
 
-void ImageViewer::sortSetup()
+void MemeSort::sortSetup()
 {
     // Connect the slot and signal
     QObject::connect(imageLabelLeft, &clickimagelabel::mousePressed,
-                     this, &ImageViewer::clickImage);
+                     this, &MemeSort::clickImage);
     QObject::connect(imageLabelRight, &clickimagelabel::mousePressed,
-                     this, &ImageViewer::clickImage);
+                     this, &MemeSort::clickImage);
 
     QDir directory(sourceFolderLineEdit->text());
     QStringList images = directory.entryList(QStringList() << "*.jpg" << "*.JPG" << "*.png" << "*.PNG",QDir::Files);
@@ -239,7 +239,7 @@ void ImageViewer::sortSetup()
 
     // Setup the jsonData
     QJsonArray level;
-    QJsonArray nextLevel;
+    QJsonArray nextRunArray;
 
     QList<QString>::iterator i;
     for(i = images.begin(); i != images.end(); ++i)
@@ -250,16 +250,16 @@ void ImageViewer::sortSetup()
     }
 
     QJsonArray empty;
-    nextLevel.append(empty);
+    nextRunArray.append(empty);
 
-    sortData["currentLevel"] = level;
-    sortData["nextLevel"] = nextLevel;
+    sortData["currentRunArray"] = level;
+    sortData["nextRunArray"] = nextRunArray;
 
     loadFile(sourceFolderLineEdit->text() + "\\" + images[0], false);
     loadFile(sourceFolderLineEdit->text() + "\\" + images[1], true);
 }
 
-bool ImageViewer::loadFile(const QString &fileName, const bool right)
+bool MemeSort::loadFile(const QString &fileName, const bool right)
 {
     QImageReader reader(fileName);
     reader.setAutoTransform(true);
@@ -276,7 +276,7 @@ bool ImageViewer::loadFile(const QString &fileName, const bool right)
     return true;
 }
 
-void ImageViewer::setImage(const QImage &newImage, const bool right)
+void MemeSort::setImage(const QImage &newImage, const bool right)
 {
     if(right)
     {
@@ -294,7 +294,7 @@ void ImageViewer::setImage(const QImage &newImage, const bool right)
     }
 }
 
-QString ImageViewer::openDirectory()
+QString MemeSort::openDirectory()
 {
     return QFileDialog::getExistingDirectory(this, tr("Open Directory"),
                                                 QDir::homePath(),
@@ -302,7 +302,7 @@ QString ImageViewer::openDirectory()
                                                 | QFileDialog::DontResolveSymlinks);
 }
 
-void ImageViewer::about()
+void MemeSort::about()
 {
     QMessageBox::about(this, tr("About"),
                        tr("<p><b>Meme Sort</b> is a sorting program that lets you sort your "
@@ -315,108 +315,26 @@ void ImageViewer::about()
                         "Tom Busby 2021 <a href=\"https://busbania.com\">busbania.com<a>"));
 }
 
-/**
- * @brief ImageViewer::clickImage
- * @param val
- *
- * This method assumed that the sortData member has the currentLevel json array set with at least
- * two elements. This method also assumes that the sortData memebr has the nextLevel attribute set
- * with at least an empty nested array.
- */
-void ImageViewer::clickImage(QString val)
+void MemeSort::clickImage(QString val)
 {
     QString strFromObj;
-    QJsonArray level, nextLevel, leaf, otherLeaf, nextLeaf, tmpLeaf, leaf1, leaf2;
+    QJsonArray currentRunArray, nextRunArray;
     QString value;
     QJsonArray::iterator i;
-    int curLeafPos, otherLeafPos;
 
     // Push the current state on to the undo stack so the following comparison can be undone.
     undoStack->push(new SortCommand(this, sortData, comparisons));
 
-    level = sortData["currentLevel"].toArray();
-    nextLevel = sortData["nextLevel"].toArray();
-    nextLeaf = nextLevel.last().toArray();
-
-    if(val == "Left")
-    {
-        leaf = level.first().toArray();
-        value = leaf.first().toString();
-        leaf.removeFirst();
-        level[0] = leaf;
-        nextLeaf.append(value);
-        otherLeaf = level[1].toArray();
-        curLeafPos = 0;
-        otherLeafPos = 1;
-    }
-    else // val == "Right"
-    {
-        leaf = level[1].toArray();
-        value = leaf.first().toString();
-        leaf.removeFirst();
-        level[1] = leaf;
-        nextLeaf.append(value);
-        otherLeaf = level.first().toArray();
-        curLeafPos = 1;
-        otherLeafPos = 0;
-    }
-
-    // Append the rest to the next level leaf if nothing left to compare
-    if(leaf.size() == 0)
-    {
-        for(i = otherLeaf.begin(); i != otherLeaf.end(); ++i)
-        {
-            nextLeaf.append((*i).toString());
-        }
-
-        level.removeFirst();
-        level.removeFirst();
-
-        nextLevel.removeLast();
-        nextLevel.append(nextLeaf);
-        QJsonArray tmpArray;
-        nextLevel.append(tmpArray);
-    }
-    else
-    {
-        nextLevel.removeLast();
-        nextLevel.append(nextLeaf);
-    }
-
-    // Stuff to do after performing the sorting step.
-    if(level.size() > 1)
-    {
-        sortData["currentLevel"] = level;
-        sortData["nextLevel"] = nextLevel;
-    }
-    else if(level.size() == 1)
-    {
-        tmpLeaf = nextLevel.at(nextLevel.size() - 2).toArray();
-        nextLevel.removeAt(nextLevel.size() - 2);
-
-        level.prepend(tmpLeaf);
-
-        sortData["currentLevel"] = level;
-        sortData["nextLevel"] = nextLevel;
-    }
-    else // level.size() == 0
-    {
-        nextLevel.removeLast();
-        sortData["currentLevel"] = nextLevel;
-        QJsonArray empty;
-        nextLevel = empty;
-        nextLevel.append(empty);
-        sortData["nextLevel"] = nextLevel;
-    }
-
-    level = sortData["currentLevel"].toArray();
-    nextLevel = sortData["nextLevel"].toArray();
+    performMergeStep(val);
 
     comparisons++;
     const QString message = tr("Comparisons: %1 | Estimated %2 to %3 comparisons needed.").arg(comparisons).arg(lowerBound).arg(upperBound);
     statusBar()->showMessage(message);
 
-    if(level.size() == 1 && nextLevel.size() == 1 && nextLevel[0].toArray().size() == 0)
+    currentRunArray = sortData["currentRunArray"].toArray();
+    nextRunArray = sortData["nextRunArray"].toArray();
+
+    if(currentRunArray.size() == 1 && nextRunArray.size() == 1 && nextRunArray[0].toArray().size() == 0)
     {
         copySortedFiles();
         stopSort();
@@ -428,10 +346,10 @@ void ImageViewer::clickImage(QString val)
     }
 }
 
-void ImageViewer::copySortedFiles()
+void MemeSort::copySortedFiles()
 {
     QJsonArray level, list;
-    level = sortData["currentLevel"].toArray();
+    level = sortData["currentRunArray"].toArray();
     list = level[0].toArray();
 
     QJsonArray::iterator i;
@@ -442,10 +360,10 @@ void ImageViewer::copySortedFiles()
     }
 }
 
-void ImageViewer::loadImagesFromCurrentLevel()
+void MemeSort::loadImagesFromCurrentLevel()
 {
         QJsonArray level, leaf1, leaf2;
-        level = sortData["currentLevel"].toArray();
+        level = sortData["currentRunArray"].toArray();
         leaf1 = level.first().toArray();
         level.removeFirst();
         leaf2 = level.first().toArray();
@@ -455,7 +373,101 @@ void ImageViewer::loadImagesFromCurrentLevel()
         loadFile(sourceFolderLineEdit->text() + "\\" + leaf2[0].toString(), true);
 }
 
-void ImageViewer::setSortState(QJsonObject data, int newComparisons)
+/**
+ * @brief ImageViewer::clickImage
+ * @param val
+ *
+ * This method assumed that the sortData member has the currentRunArray json array set with at least
+ * two elements. This method also assumes that the sortData member has the nextRunArray attribute set
+ * with at least an empty nested array.
+ */
+void MemeSort::performMergeStep(QString side)
+{
+    QString strFromObj;
+    QJsonArray currentRunArray, nextRunArray, run, otherRun, nextRun, tmpRun;
+    QString value;
+    QJsonArray::iterator i;
+
+    currentRunArray = sortData["currentRunArray"].toArray();
+    nextRunArray = sortData["nextRunArray"].toArray();
+    nextRun = nextRunArray.last().toArray();
+
+    // Move the "better" image to the next level.
+    if(side == "Left")
+    {
+        run = currentRunArray.first().toArray();
+        value = run.first().toString();
+        run.removeFirst();
+        currentRunArray[0] = run;
+        nextRun.append(value);
+        otherRun = currentRunArray[1].toArray();
+    }
+    else // side == "Right"
+    {
+        run = currentRunArray[1].toArray();
+        value = run.first().toString();
+        run.removeFirst();
+        currentRunArray[1] = run;
+        nextRun.append(value);
+        otherRun = currentRunArray.first().toArray();
+    }
+
+    // Append the rest to the next level run if nothing left to compare
+    if(run.size() == 0)
+    {
+        for(i = otherRun.begin(); i != otherRun.end(); ++i)
+        {
+            nextRun.append((*i).toString());
+        }
+
+        currentRunArray.removeFirst();
+        currentRunArray.removeFirst();
+
+        nextRunArray.removeLast();
+        nextRunArray.append(nextRun);
+        QJsonArray tmpArray;
+        nextRunArray.append(tmpArray);
+    }
+    else // Still stuff to compare
+    {
+        // Update the next run
+        nextRunArray.removeLast();
+        nextRunArray.append(nextRun);
+    }
+
+    if(currentRunArray.size() > 1)
+    {
+        // Assign the levels back to the member variables
+        sortData["currentRunArray"] = currentRunArray;
+        sortData["nextRunArray"] = nextRunArray;
+    }
+    else if(currentRunArray.size() == 1)
+    {
+        // If there's only one list left to merge, move a list from the next run array
+        // back to the current run array to merge it immediately.
+
+        tmpRun = nextRunArray.at(nextRunArray.size() - 2).toArray();
+        nextRunArray.removeAt(nextRunArray.size() - 2);
+
+        currentRunArray.prepend(tmpRun);
+
+        sortData["currentRunArray"] = currentRunArray;
+        sortData["nextRunArray"] = nextRunArray;
+    }
+    else // level.size() == 0
+    {
+        // If there are no lists left to merge, move the lists from the next run array back
+        // to the current run array to start the merge process over.
+        nextRunArray.removeLast();
+        sortData["currentRunArray"] = nextRunArray;
+        QJsonArray empty;
+        nextRunArray = empty;
+        nextRunArray.append(empty);
+        sortData["nextRunArray"] = nextRunArray;
+    }
+}
+
+void MemeSort::setSortState(QJsonObject data, int newComparisons)
 {
     sortData = data;
     comparisons = newComparisons;

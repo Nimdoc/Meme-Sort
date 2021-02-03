@@ -4,14 +4,16 @@
 
   win32:RC_ICONS += icon.ico
 
-  HEADERS       = imageviewer.h \
+  HEADERS       = \
   analysishelper.h \
   clickimagelabel.h \
+  memesort.h \
   sortcommand.h
-  SOURCES       = imageviewer.cpp \
+  SOURCES       = \
     analysishelper.cpp \
     clickimagelabel.cpp \
                   main.cpp \
+    memesort.cpp \
     sortcommand.cpp
 
   # install

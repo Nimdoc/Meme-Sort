@@ -55,13 +55,13 @@
 #include <QtDebug>
 #include <QDir>
 
-#include "imageviewer.h"
+#include "memesort.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    QGuiApplication::setApplicationDisplayName(ImageViewer::tr("Meme Sort"));
-    ImageViewer imageViewer;
+    QGuiApplication::setApplicationDisplayName(MemeSort::tr("Meme Sort"));
+    MemeSort imageViewer;
     imageViewer.show();
     return app.exec();
 }

@@ -1,6 +1,6 @@
 #include "sortcommand.h"
 
-SortCommand::SortCommand(ImageViewer *imgViewer, QJsonObject data, int newComparisons)
+SortCommand::SortCommand(MemeSort *imgViewer, QJsonObject data, int newComparisons)
 {
     imageViewer = imgViewer;
     sortState = data;
